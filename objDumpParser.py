@@ -1,4 +1,5 @@
 import re
+import csv
 
 def parse_objdump(file_name):
     with open(file_name, 'r') as file:
@@ -21,3 +22,14 @@ def parse_objdump(file_name):
     return instructions
 
 instructions = parse_objdump('objdump.txt')
+
+def get_unique_values(data, key):
+    values = set(item[key] for item in data)
+    return list(values)
+
+uniqueVals = get_unique_values(instructions, 'instruction')
+
+with open("instrucoes.csv", "w", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    for item in uniqueVals:
+        writer.writerow([item])
