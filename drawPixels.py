@@ -4,18 +4,19 @@ from objDumpParser import parse_objdump
 from pygame.locals import *
 from pygame import gfxdraw
 # Parameters
-virtPixelSize = 10
-screenX=virtPixelSize*100
+virtPixelSize = 5
+screenX=virtPixelSize*200
 screenY=screenX
 fillColor=Color(255,255,255)
 borderColor=Color(0,0,0)
+
 # Methods
 def drawVirtPixel(surface, xOrigin, yOrigin, color, newSize):
     for x in range(newSize):
         for y in range(newSize):
             if (x==0 or y==0 or x==newSize-1 or y ==newSize-1):
-                gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, borderColor)
-                #gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
+                #gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, borderColor)
+                gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
             else:
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
 
@@ -79,4 +80,20 @@ while True: # main game loop
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Get the mouse position
+            mouse_pos = pygame.mouse.get_pos()
+
+            print("Mouse clicked at coordinates:", mouse_pos)
+            # prints mouse x and y coords to shell
+            x = mouse_pos[0]
+            y = mouse_pos[1]
+            # finds which pixel was clicked on
+            pixelX = (x//(virtPixelSize))
+            pixelY = (y//(virtPixelSize)) 
+            clickIndex = (screenX//virtPixelSize * (pixelY)) + pixelX
+            print("Pixel clicked at coordinates:", pixelX, pixelY)
+            print("Index:", clickIndex)
+            print("Instruction:", instructions[clickIndex])
+
     pygame.display.update()
