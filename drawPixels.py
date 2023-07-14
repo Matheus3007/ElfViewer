@@ -35,12 +35,30 @@ def fillRegion(surface, start, end, color):
 def drawPixelRelative(surface, spot, color):
     fillRegion(surface, spot, spot+1, color)
 
+def display_dialogue_box(text, position, screen):
+    font = pygame.font.Font(None, 24)
+    dialogue_text = font.render(text, True, (0, 0, 0))
+    dialogue_box = dialogue_text.get_rect(topleft=position)
+    
+    # Draw the box background
+    box_width = dialogue_text.get_width() + 10
+    box_height = dialogue_text.get_height() + 10
+    dialogue_box_background = pygame.Rect(position, (box_width, box_height))
+    pygame.draw.rect(screen, (255,255,255), dialogue_box_background)
+    
+    # Draw the text
+    screen.blit(dialogue_text, dialogue_box.move(5, 5))
+    pygame.display.flip()
+
+
+
 # Reads input with objdump file name and parses it
 objdumpFileName = input("Enter objdump file name: ")
 instructions = parse_objdump(objdumpFileName)
-
+icon = pygame.image.load("bruninho.jpg")
 pygame.init()
 pygame.display.set_caption("ElfoViewer")
+pygame.display.set_icon(icon)
 DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
 
 DISPLAYSURF.fill((128,128,128))
@@ -73,6 +91,10 @@ for instruction in instructions:
     color = groupColor[instruction['group']]
     drawPixelRelative(DISPLAYSURF, instruction['index'], color)
 
+dialogue_box_active = False
+dialogue_box_text = ""
+dialogue_box_position = (0, 0)
+dialogue_box_timer = 0
 
 
 while True: # main game loop
@@ -95,5 +117,23 @@ while True: # main game loop
             print("Pixel clicked at coordinates:", pixelX, pixelY)
             print("Index:", clickIndex)
             print("Instruction:", instructions[clickIndex])
+            mnemonic = instructions[clickIndex]['instruction']
+            address = instructions[clickIndex]['address']
+            dialogue_content = "Address: " +"0x"+ address + " | " + "Instruction: " + mnemonic
+            if not dialogue_box_active:
+                dialogue_box_text = "This is a sample dialogue."
+                dialogue_box_position = event.pos
+                dialogue_box_active = True
+                dialogue_box_timer = pygame.time.get_ticks()
+                
+            elif dialogue_box_active:
+                dialogue_box_active = False
+
+
+    for instruction in instructions:
+        color = groupColor[instruction['group']]
+        drawPixelRelative(DISPLAYSURF, instruction['index'], color)
+    if dialogue_box_active:
+        display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
 
     pygame.display.update()
