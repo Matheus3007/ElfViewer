@@ -3,9 +3,23 @@ from typeChooser import typeChooser
 from objDumpParser import parse_objdump
 from pygame.locals import *
 from pygame import gfxdraw
+import sys
+import importlib
+
+
+
 # Parameters
+# For large dumps
+virtPixelSize = 1
+screenX=virtPixelSize*1000
+screenY=screenX
+fillColor=Color(255,255,255)
+borderColor=Color(0,0,0)
+
+# For small dumps
+
 virtPixelSize = 5
-screenX=virtPixelSize*200
+screenX=virtPixelSize*190
 screenY=screenX
 fillColor=Color(255,255,255)
 borderColor=Color(0,0,0)
@@ -19,6 +33,12 @@ def drawVirtPixel(surface, xOrigin, yOrigin, color, newSize):
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
             else:
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
+
+def get_instructio_by_memory_index(lst, index):
+    for item in lst:
+        if 'memory_index' in item and item['memory_index'] == index:
+            return item
+    return "No relative Index"  # Return None if the item with the specified index is not found
 
 def coord(pos):
     y=pos//(screenY//virtPixelSize)
@@ -38,15 +58,24 @@ def drawPixelRelative(surface, spot, color):
 def display_dialogue_box(text, position, screen):
     font = pygame.font.Font(None, 24)
     dialogue_text = font.render(text, True, (0, 0, 0))
-    dialogue_box = dialogue_text.get_rect(topleft=position)
+    DISPLAYSURF.set_at(position, (255, 255, 255))
+    ## Draws the box to the left of the cursor if beyond middle of screen
+    if position[0] > screen.get_width() / 2:
+        dialogue_box = dialogue_text.get_rect(topright=position)
+    else:
+        dialogue_box = dialogue_text.get_rect(topleft=position)
     
-    # Draw the box background
+    
+    # Draws the box background
     box_width = dialogue_text.get_width() + 10
     box_height = dialogue_text.get_height() + 10
-    dialogue_box_background = pygame.Rect(position, (box_width, box_height))
+    if position[0] > screen.get_width() / 2:
+        dialogue_box_background = pygame.Rect((position[0]-box_width+10, position[1]+2), (box_width, box_height))
+    else:
+        dialogue_box_background = pygame.Rect(position, (box_width, box_height))
     pygame.draw.rect(screen, (255,255,255), dialogue_box_background)
     
-    # Draw the text
+    # Draws the text
     screen.blit(dialogue_text, dialogue_box.move(5, 5))
     pygame.display.flip()
 
@@ -61,7 +90,7 @@ pygame.display.set_caption("ElfoViewer")
 pygame.display.set_icon(icon)
 DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
 
-DISPLAYSURF.fill((128,128,128))
+
 
 drawVirtPixel(DISPLAYSURF, 0,0,fillColor ,virtPixelSize)
 drawVirtPixel(DISPLAYSURF, 1,1,fillColor,virtPixelSize)
@@ -75,21 +104,24 @@ fillRegion(DISPLAYSURF, 3201, 3202, ((0,0,255)))
 drawPixelRelative(DISPLAYSURF, 3202, (0,255,0))
 
 
+default_theme = "DebuggersDream"
+theme_arg = sys.argv[1] if len(sys.argv) > 1 else default_theme
+try:
+    # Load the selected theme module dynamically
+    theme_module = importlib.import_module(f"themes.{theme_arg}")
+    groupColor = theme_module.theme
+    theme_name = theme_module.name
+except ImportError:
+    print("Invalid theme selection.")
+    sys.exit(1)
+
 
 # Relates each group to a color
-groupColor = {
-    "LOAD STORE": (0,255,0), # COLOR = GREEN
-    "BRANCH": (0,0,255), # COLOR = BLUE
-    "ALU": (255,0,0), # COLOR = RED
-    "COPROCESSOR": (255,255,0), # COLOR = YELLOW
-    "LOAD STORE MULTIPLE": (255,0,255),     # COLOR = MAGENTA
-    "LOAD STORE INDEXED": (0,255,255),     # COLOR = CYAN
-    "UNDEFINED": (0,0,0) # COLOR = GRAY
-}
+
 # Draws each instruction in the screen
 for instruction in instructions:
     color = groupColor[instruction['group']]
-    drawPixelRelative(DISPLAYSURF, instruction['index'], color)
+    drawPixelRelative(DISPLAYSURF, instruction['memory_index'], color)
 
 dialogue_box_active = False
 dialogue_box_text = ""
@@ -116,9 +148,10 @@ while True: # main game loop
             clickIndex = (screenX//virtPixelSize * (pixelY)) + pixelX
             print("Pixel clicked at coordinates:", pixelX, pixelY)
             print("Index:", clickIndex)
-            print("Instruction:", instructions[clickIndex])
-            mnemonic = instructions[clickIndex]['instruction']
-            address = instructions[clickIndex]['address']
+            clickedInstruction = get_instructio_by_memory_index(instructions, clickIndex)
+            print("Instruction:", clickedInstruction)
+            mnemonic = clickedInstruction['instruction']
+            address = clickedInstruction['address']
             dialogue_content = "Address: " +"0x"+ address + " | " + "Instruction: " + mnemonic
             if not dialogue_box_active:
                 dialogue_box_text = "This is a sample dialogue."
@@ -128,12 +161,13 @@ while True: # main game loop
                 
             elif dialogue_box_active:
                 dialogue_box_active = False
+    if dialogue_box_active:
+        
+        display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
 
-
+    DISPLAYSURF.fill(groupColor['background'])
     for instruction in instructions:
         color = groupColor[instruction['group']]
-        drawPixelRelative(DISPLAYSURF, instruction['index'], color)
-    if dialogue_box_active:
-        display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
+        drawPixelRelative(DISPLAYSURF, instruction['memory_index'], color)
 
     pygame.display.update()
