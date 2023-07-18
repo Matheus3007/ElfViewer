@@ -1,0 +1,107 @@
+
+kernel.elf:     file format elf32-littlearm
+
+
+Disassembly of section .reset:
+
+00000000 <.reset>:
+   0:	ea001ffe 	b	8000 <STACK_START>
+
+Disassembly of section .irq:
+
+00000018 <.irq>:
+  18:	ea00202c 	b	80d0 <handle_interruptions>
+
+Disassembly of section .text:
+
+00008000 <set_initial_vals>:
+    8000:	e3a00013 	mov	r0, #19
+    8004:	e129f000 	msr	CPSR_fc, r0
+    8008:	e3a0d902 	mov	sp, #32768	@ 0x8000
+    800c:	e59f0090 	ldr	r0, [pc, #144]	@ 80a4 <waiting_for_interrupt+0x4>
+    8010:	e59f1090 	ldr	r1, [pc, #144]	@ 80a8 <waiting_for_interrupt+0x8>
+    8014:	e5911000 	ldr	r1, [r1]
+    8018:	e3a02000 	mov	r2, #0
+    801c:	e3a03001 	mov	r3, #1
+    8020:	e59f4084 	ldr	r4, [pc, #132]	@ 80ac <waiting_for_interrupt+0xc>
+    8024:	e5945000 	ldr	r5, [r4]
+    8028:	e3c55602 	bic	r5, r5, #2097152	@ 0x200000
+    802c:	e5845000 	str	r5, [r4]
+    8030:	e59f4078 	ldr	r4, [pc, #120]	@ 80b0 <waiting_for_interrupt+0x10>
+    8034:	e3a050f0 	mov	r5, #240	@ 0xf0
+    8038:	e5845000 	str	r5, [r4]
+    803c:	e59f4070 	ldr	r4, [pc, #112]	@ 80b4 <waiting_for_interrupt+0x14>
+    8040:	e5945000 	ldr	r5, [r4]
+    8044:	e3c55001 	bic	r5, r5, #1
+    8048:	e5845000 	str	r5, [r4]
+    804c:	e59f4058 	ldr	r4, [pc, #88]	@ 80ac <waiting_for_interrupt+0xc>
+    8050:	e5945000 	ldr	r5, [r4]
+    8054:	e3c55001 	bic	r5, r5, #1
+    8058:	e5845000 	str	r5, [r4]
+    805c:	e59f4054 	ldr	r4, [pc, #84]	@ 80b8 <waiting_for_interrupt+0x18>
+    8060:	e3a05019 	mov	r5, #25
+    8064:	e5845000 	str	r5, [r4]
+    8068:	e59f404c 	ldr	r4, [pc, #76]	@ 80bc <waiting_for_interrupt+0x1c>
+    806c:	e59f504c 	ldr	r5, [pc, #76]	@ 80c0 <waiting_for_interrupt+0x20>
+    8070:	e5845000 	str	r5, [r4]
+    8074:	e59f4048 	ldr	r4, [pc, #72]	@ 80c4 <waiting_for_interrupt+0x24>
+    8078:	e3a05001 	mov	r5, #1
+    807c:	e5845000 	str	r5, [r4]
+    8080:	e59f402c 	ldr	r4, [pc, #44]	@ 80b4 <waiting_for_interrupt+0x14>
+    8084:	e5945000 	ldr	r5, [r4]
+    8088:	e3c55b01 	bic	r5, r5, #1024	@ 0x400
+    808c:	e5845000 	str	r5, [r4]
+    8090:	e59f4014 	ldr	r4, [pc, #20]	@ 80ac <waiting_for_interrupt+0xc>
+    8094:	e5945000 	ldr	r5, [r4]
+    8098:	e3c55b01 	bic	r5, r5, #1024	@ 0x400
+    809c:	e5845000 	str	r5, [r4]
+
+000080a0 <waiting_for_interrupt>:
+    80a0:	eafffffe 	b	80a0 <waiting_for_interrupt>
+    80a4:	000080cc 	.word	0x000080cc
+    80a8:	000080c8 	.word	0x000080c8
+    80ac:	03ff4008 	.word	0x03ff4008
+    80b0:	03ff5000 	.word	0x03ff5000
+    80b4:	03ff4000 	.word	0x03ff4000
+    80b8:	03ff5004 	.word	0x03ff5004
+    80bc:	03ff6004 	.word	0x03ff6004
+    80c0:	017d7840 	.word	0x017d7840
+    80c4:	03ff6000 	.word	0x03ff6000
+
+Disassembly of section .interrupt:
+
+000080d0 <handle_interruptions>:
+    80d0:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
+    80d4:	e59f4064 	ldr	r4, [pc, #100]	@ 8140 <reverse_frame_order+0x1c>
+    80d8:	e5945000 	ldr	r5, [r4]
+    80dc:	e3150b01 	tst	r5, #1024	@ 0x400
+    80e0:	1b000003 	blne	80f4 <update_frame>
+    80e4:	e3150001 	tst	r5, #1
+    80e8:	1b00000d 	blne	8124 <reverse_frame_order>
+    80ec:	e8bd41f0 	pop	{r4, r5, r6, r7, r8, lr}
+    80f0:	e25ef004 	subs	pc, lr, #4
+
+000080f4 <update_frame>:
+    80f4:	e52de004 	push	{lr}		@ (str lr, [sp, #-4]!)
+    80f8:	e0806002 	add	r6, r0, r2
+    80fc:	e5d66000 	ldrb	r6, [r6]
+    8100:	e59f703c 	ldr	r7, [pc, #60]	@ 8144 <reverse_frame_order+0x20>
+    8104:	e5c76003 	strb	r6, [r7, #3]
+    8108:	e0922003 	adds	r2, r2, r3
+    810c:	41a02001 	movmi	r2, r1
+    8110:	e1520001 	cmp	r2, r1
+    8114:	c3a02000 	movgt	r2, #0
+    8118:	e3858b01 	orr	r8, r5, #1024	@ 0x400
+    811c:	e5848000 	str	r8, [r4]
+    8120:	e49df004 	pop	{pc}		@ (ldr pc, [sp], #4)
+
+00008124 <reverse_frame_order>:
+    8124:	e52de004 	push	{lr}		@ (str lr, [sp, #-4]!)
+    8128:	e3530001 	cmp	r3, #1
+    812c:	03e03000 	mvneq	r3, #0
+    8130:	13a03001 	movne	r3, #1
+    8134:	e3858001 	orr	r8, r5, #1
+    8138:	e5848000 	str	r8, [r4]
+    813c:	e49df004 	pop	{pc}		@ (ldr pc, [sp], #4)
+    8140:	03ff4004 	.word	0x03ff4004
+    8144:	03ff5008 	.word	0x03ff5008
