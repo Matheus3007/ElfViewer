@@ -9,20 +9,8 @@ import importlib
 
 
 # Parameters
-# For large dumps
-virtPixelSize = 1
-screenX=virtPixelSize*1000
-screenY=screenX
-fillColor=Color(255,255,255)
-borderColor=Color(0,0,0)
-
 # For small dumps
 
-virtPixelSize = 5
-screenX=virtPixelSize*190
-screenY=screenX
-fillColor=Color(255,255,255)
-borderColor=Color(0,0,0)
 
 # Methods
 def drawVirtPixel(surface, xOrigin, yOrigin, color, newSize):
@@ -40,25 +28,25 @@ def get_instructio_by_memory_index(lst, index):
             return item
     return "No relative Index"  # Return None if the item with the specified index is not found
 
-def coord(pos):
+def coord(pos, screenX, screenY, virtPixelSize):
     y=pos//(screenY//virtPixelSize)
     x=pos%(screenY//virtPixelSize)
     return (x,y)
 
-def fillRegion(surface, start, end, color):
+def fillRegion(surface, start, end, color, screenX, screenY, virtPixelSize):
     size = end - start
     lineCount = size//(screenY//virtPixelSize)
     for pos in range(start, end):     
-        x, y = coord(pos)
+        x, y = coord(pos, screenX, screenY, virtPixelSize)
         drawVirtPixel(surface, x, y, color, virtPixelSize)
 
-def drawPixelRelative(surface, spot, color):
-    fillRegion(surface, spot, spot+1, color)
+def drawPixelRelative(surface, spot, color, screenX, screenY, virtPixelSize):
+    fillRegion(surface, spot, spot+1, color, screenX, screenY, virtPixelSize)
 
 def display_dialogue_box(text, position, screen):
     font = pygame.font.Font(None, 24)
     dialogue_text = font.render(text, True, (0, 0, 0))
-    DISPLAYSURF.set_at(position, (255, 255, 255))
+    screen.set_at(position, (255, 255, 255))
     ## Draws the box to the left of the cursor if beyond middle of screen
     if position[0] > screen.get_width() / 2:
         dialogue_box = dialogue_text.get_rect(topright=position)
@@ -79,7 +67,31 @@ def display_dialogue_box(text, position, screen):
     screen.blit(dialogue_text, dialogue_box.move(5, 5))
     pygame.display.flip()
 
+'''
+default_theme = "DebuggersDream"
+theme_arg = sys.argv[1] if len(sys.argv) > 1 else default_theme
+try:
+    # Load the selected theme module dynamically
+    theme_module = importlib.import_module(f"themes.{theme_arg}")
+    groupColor = theme_module.theme
+    theme_name = theme_module.name
+except ImportError:
+    print("Invalid theme selection.")
+    sys.exit(1)
 
+default_params = "average"
+params_arg = sys.argv[2] if len(sys.argv) > 2 else default_params
+try:
+    # Load the selected theme module dynamically
+    param_module = importlib.import_module(f"renderParams.{params_arg}")
+    virtPixelSize = param_module.renderParams["virtPixelSize"]
+    screenX = param_module.renderParams["screenX"]
+    screenY = param_module.renderParams["screenY"]
+    fillColor = param_module.renderParams["fillColor"]
+    borderColor = param_module.renderParams["borderColor"]
+except ImportError:
+    print("Invalid render parameter selection.")
+    sys.exit(1)
 
 # Reads input with objdump file name and parses it
 objdumpFileName = input("Enter objdump file name: ")
@@ -102,18 +114,6 @@ fillRegion(DISPLAYSURF, 2500, 3000, (0,255,255))
 fillRegion(DISPLAYSURF, 3200, 3201, (0,255,255))
 fillRegion(DISPLAYSURF, 3201, 3202, ((0,0,255)))
 drawPixelRelative(DISPLAYSURF, 3202, (0,255,0))
-
-
-default_theme = "DebuggersDream"
-theme_arg = sys.argv[1] if len(sys.argv) > 1 else default_theme
-try:
-    # Load the selected theme module dynamically
-    theme_module = importlib.import_module(f"themes.{theme_arg}")
-    groupColor = theme_module.theme
-    theme_name = theme_module.name
-except ImportError:
-    print("Invalid theme selection.")
-    sys.exit(1)
 
 
 # Relates each group to a color
@@ -172,3 +172,4 @@ while True: # main game loop
 
 
     pygame.display.update()
+'''
