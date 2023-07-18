@@ -8,22 +8,9 @@ import sys
 import importlib
 import drawPixels as dp
 
-############### Imports theme information from themes/DebuggersDream.py ###############
-default_theme = "DebuggersDream"
-theme_arg = sys.argv[1] if len(sys.argv) > 1 else default_theme
-try:
-    # Load the selected theme module dynamically
-    theme_module = importlib.import_module(f"themes.{theme_arg}")
-    groupColor = theme_module.theme
-    theme_name = theme_module.name
-except ImportError:
-    print("Invalid theme selection.")
-    sys.exit(1)
-#######################################################################################
-
 ############### Imports render parameters from renderParams/average.py ###############
 default_params = "average"
-params_arg = sys.argv[2] if len(sys.argv) > 2 else default_params
+params_arg = sys.argv[1] if len(sys.argv) > 1 else default_params
 try:
     # Load the selected theme module dynamically
     global virtPixelSize, screenX, screenY, fillColor, borderColor
@@ -40,15 +27,28 @@ except ImportError:
 
 ############### Selects between linear render or relative render #####################
 default_render = "relative"
-render_arg = sys.argv[3] if len(sys.argv) > 3 else default_render
+render_arg = sys.argv[2] if len(sys.argv) > 2 else default_render
 if render_arg == "relative":
     renderStyle = 'memory_index'
 elif render_arg == "linear":
     renderStyle = 'index'
 #######################################################################################
 
+############### Imports theme information from themes/DebuggersDream.py ###############
+default_theme = "DebuggersDream"
+theme_arg = sys.argv[3] if len(sys.argv) > 3 else default_theme
+try:
+    # Load the selected theme module dynamically
+    theme_module = importlib.import_module(f"themes.{theme_arg}")
+    groupColor = theme_module.theme
+    theme_name = theme_module.name
+except ImportError:
+    print("Invalid theme selection.")
+    sys.exit(1)
+#######################################################################################
+
 app_title = '''
-Welcome your favourite brand new and improved, elf file visualizer:
+Welcome to your favourite brand new and improved, elf file visualizer:
 --------------------------------------------------------------------------------------------------------------              
    ,ggggggg,                          ,ggg,         ,gg                                                  
  ,dP""""""Y8b ,dPYb, ,dPYb,          dP""Y8a       ,8P                                                   
@@ -65,7 +65,7 @@ Y8,           I8P    I8P     i8'    ,8I    Y8,   ,8P   88   I8, ,8I  I8    I8   
                      I8   8I                                                                             
                      I8   8I                                                                             
                      I8, ,8'                                                                             
-                      "Y8P'                                                                              
+                      "Y8P'                                                                             *<|:^) 
 --------------------------------------------------------------------------------------------------------------
 '''
 print(app_title)
