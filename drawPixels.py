@@ -17,7 +17,7 @@ def drawVirtPixel(surface, xOrigin, yOrigin, color, newSize):
     for x in range(newSize):
         for y in range(newSize):
             if (x==0 or y==0 or x==newSize-1 or y ==newSize-1):
-                #gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, borderColor)
+                #gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, (0,0,0))
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
             else:
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
