@@ -36,7 +36,7 @@ def parse_objdump(file_name):
                 group = "COPROCESSOR"
             if instruction == "mrs":
                 group = "COPROCESSOR"
-            if group == "UNDEFINED" and instruction == "ldr" or instruction == "str":
+            if group == "UNDEFINED" and instruction[:3] == "ldr" or instruction[:3] == "str":
                 group = "LOAD STORE"
             instructions.append({
                 'index': index,                         # General dict index
