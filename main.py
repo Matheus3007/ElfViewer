@@ -4,6 +4,7 @@ from objDumpParser import parse_objdump
 from pygame.locals import *
 from pygame import gfxdraw
 from tqdm import tqdm
+from tabulate import tabulate
 import sys
 import importlib
 import drawPixels as dp
@@ -47,6 +48,12 @@ except ImportError:
     sys.exit(1)
 #######################################################################################
 
+group_types = list(theme_module.theme)
+group_types = group_types[:8]
+group_types.append("Total")
+group_ammounts = [0,0,0,0,0,0,0,0,0]
+#print(group_types)
+line = '''--------------------------------------------------------------------------------------------------------------'''
 app_title = '''
 Welcome to your favourite brand new and improved, elf file visualizer:
 --------------------------------------------------------------------------------------------------------------              
@@ -83,28 +90,39 @@ DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
 
 
 #### Draws elf layout
-
-for instruction in instructions:
+count = 0
+for instruction in tqdm(instructions, desc="Rendering and creating table",unit="instructions"):
+    count += 1
     color = groupColor[instruction['group']]
+    group_ammounts[group_types.index(instruction['group'])] += 1
     dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
-
-
+print("\n")
+group_ammounts[-1] = count
+#print("Group ammounts:", group_ammounts)
+print(tabulate([group_ammounts], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
-
 dialogue_box_active = False
 
 #### Main loop
 
 while True: # main game loop
     for event in pygame.event.get():
+        ## Quits when esc is pressed
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                print(line)
+                print("\nBye!")
+                pygame.quit()
+                sys.exit()
         if event.type == QUIT:
+            
             pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
             mouse_pos = pygame.mouse.get_pos()
 
-            print("Mouse clicked at coordinates:", mouse_pos)
+            #print("Mouse clicked at coordinates:", mouse_pos)
             # prints mouse x and y coords to shell
             x = mouse_pos[0]
             y = mouse_pos[1]
@@ -112,27 +130,27 @@ while True: # main game loop
             pixelX = (x//(virtPixelSize))
             pixelY = (y//(virtPixelSize)) 
             clickIndex = (screenX//virtPixelSize * (pixelY)) + pixelX
-            print("Pixel clicked at coordinates:", pixelX, pixelY)
-            print("Index:", clickIndex)
+            #print("Pixel clicked at coordinates:", pixelX, pixelY)
+            #print("Index:", clickIndex)
             if renderStyle == 'memory_index':
               try:
                 clickedInstruction = dp.get_instructio_by_memory_index(instructions, clickIndex)
               except Exception as e:
-                print("No instruction found")
+                #print("No instruction found")
                 continue
             elif renderStyle == 'index':
               try:
                 clickedInstruction = instructions[clickIndex]    
               except Exception as e:
-                print("No instruction found")
+                #print("No instruction found")
                 continue
                 
             try:
-              print("Instruction:", clickedInstruction)
+              #print("Instruction:", clickedInstruction)
               mnemonic = clickedInstruction['instruction']
               address = clickedInstruction['address']
             except Exception as e:
-              print("No instruction found, address "+ str(clickedInstruction) + " is not an instruction")
+              #print("No instruction found, address "+ str(clickedInstruction) + " is not an instruction")
               continue
                 
             

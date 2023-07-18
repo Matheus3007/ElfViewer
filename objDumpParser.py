@@ -4,6 +4,8 @@ from tqdm import tqdm
 from typeChooser import typeChooser
 alu_mnemonic_list = ["and", "eor", "sub", "rsb", "add", "adc", "sbc", "rsc", "tst", "teq", "cmp", "cmn", "orr", "mov", "bic", "mvn", "mul"]
 stack_mnemonic_list = ["push", "pop"]
+shift_list = ["lsl", "lsr", "asr", "ror", "rrx"]
+coprocessor_list = ["cdp", "mcr", "mrc", "ldc", "stc", "mrs", "msr"]
 def parse_objdump(file_name):
     with open(file_name, 'r') as file:
         lines = file.readlines()
@@ -39,12 +41,16 @@ def parse_objdump(file_name):
                 group = "COPROCESSOR"
             if instruction == "mrs":
                 group = "COPROCESSOR"
-            if group == "UNDEFINED" and instruction[:2] == "ld" or instruction[:2] == "st":
-                group = "LOAD STORE"
-            if group == "UNDEFINED" and instruction[:3] in alu_mnemonic_list:
+            if group == "UNDEFINED" and (instruction[:3] in alu_mnemonic_list):
                 group = "ALU"
-            if group == "UNDEFINED" and instruction[:4] in stack_mnemonic_list:
+            if group == "UNDEFINED" and (instruction[:4] in stack_mnemonic_list):
                 group = "STACK"
+            if group == "UNDEFINED" and (instruction[:3] in shift_list):
+                group = "ALU"
+            if group == "UNDEFINED" and (instruction[:3] in coprocessor_list):
+                group = "COPROCESSOR"
+            if group == "UNDEFINED" and (instruction[:2] == "ld" or instruction[:2] == "st"):
+                group = "LOAD STORE"
             instructions.append({
                 'index': index,                         # General dict index
                 'memory_index': memory_index,           # Memory index, relative to the processor's memory
@@ -56,4 +62,5 @@ def parse_objdump(file_name):
             })
             index += 1
     print("Done!\n")
-    return instructions
+    filtered_instructions = [item for item in instructions if item.get("instruction") != ";"]
+    return filtered_instructions
