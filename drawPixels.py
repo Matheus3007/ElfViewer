@@ -161,13 +161,14 @@ while True: # main game loop
                 
             elif dialogue_box_active:
                 dialogue_box_active = False
-    if dialogue_box_active:
-        
-        display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
-
+                
     DISPLAYSURF.fill(groupColor['background'])
     for instruction in instructions:
         color = groupColor[instruction['group']]
         drawPixelRelative(DISPLAYSURF, instruction['memory_index'], color)
+    if dialogue_box_active:
+        
+        display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
+
 
     pygame.display.update()
