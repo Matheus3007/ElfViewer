@@ -1,3 +1,6 @@
+### TODO:
+# - Implement branch direction highlighting for relative mode
+
 import pygame, sys
 from typeChooser import typeChooser
 from objDumpParser import parse_objdump
@@ -103,6 +106,7 @@ print(tabulate([group_ammounts], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
 dialogue_box_active = False
 highlight_on = False
+branch_highlight_on = False
 
 #### Main loop
 
@@ -122,7 +126,8 @@ while True: # main game loop
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
             mouse_pos = pygame.mouse.get_pos()
-
+        
+            branch_highlight_on = False
             #print("Mouse clicked at coordinates:", mouse_pos)
             # prints mouse x and y coords to shell
             x = mouse_pos[0]
@@ -148,9 +153,15 @@ while True: # main game loop
                 
             try:
               print("Instruction:", clickedInstruction)
-              if clickedInstruction['group'] == 'BRANCH':
-                 target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
-                 print("Branch target:", target)
+              if not highlight_on:
+                if clickedInstruction['group'] == 'BRANCH' and clickedInstruction['instruction'][:2] != 'bl':
+                    target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
+                    if not branch_highlight_on:
+                        branch_highlight_on = True
+                    elif branch_highlight_on:
+                        branch_highlight_on = False
+
+                    print("Branch target:", target)
               mnemonic = clickedInstruction['instruction']
               address = clickedInstruction['address']
             except Exception as e:
@@ -172,14 +183,19 @@ while True: # main game loop
                 highlight_on = True
             elif highlight_on:
                 highlight_on = False
+           
                 
     DISPLAYSURF.fill(groupColor['background'])
     for instruction in instructions:
         color = groupColor[instruction['group']]
         dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
+    
+    if highlight_on:  
+        originTopX, originTopY, originBottomX, originBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction['index'],screenX)
+    if branch_highlight_on:
+        destinyTopX, destinyTopY, destinyBottomX, destinyBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),target['index'],screenX)
+        pygame.draw.line(DISPLAYSURF, (0,0,0), (originBottomX, originBottomY), (destinyTopX, destinyTopY), 2)
     if dialogue_box_active:       
         dp.display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
-    if highlight_on:
-        dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction['index'],screenX)
 
     pygame.display.update()

@@ -74,12 +74,13 @@ def display_dialogue_box(text, position, screen):
     pygame.display.flip()
 
 def highlight_virtpixel_border(surface, virtPixelSize, color, index, screenX):
-    line = (index//(screenX//virtPixelSize)) +1
-    column = (index%(screenX//virtPixelSize)) +1
+    line = (index//(screenX//virtPixelSize))
+    column = (index%(screenX//virtPixelSize))
     xCorner = column * virtPixelSize
     yCorner = line * virtPixelSize
     # Draws a border around the pixel starting in xCorner, yCorner with virtPixelSize as a side and using pygame rect
     pygame.draw.rect(surface, color, (xCorner, yCorner, virtPixelSize, virtPixelSize), 2)
+    return xCorner, yCorner, xCorner+virtPixelSize, yCorner+virtPixelSize
 
 '''
 default_theme = "DebuggersDream"

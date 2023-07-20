@@ -64,4 +64,4 @@ def parse_objdump(file_name):
             index += 1
     print("Done!\n")
     filtered_instructions = [item for item in instructions if item.get("instruction") != ";"]
-    return filtered_instructions
+    return instructions
