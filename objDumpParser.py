@@ -10,7 +10,7 @@ def parse_objdump(file_name):
     with open(file_name, 'r') as file:
         lines = file.readlines()
     
-    instruction_pattern = re.compile(r'\s*([0-9a-f]+):\s*([0-9a-f]+)\s*(\S+).*')
+    instruction_pattern = re.compile(r'\s*([0-9a-f]+):\s*([0-9a-f]+)\s*(\S+)\s+(.*)')
 
     instructions = []
     index = 0
@@ -21,7 +21,7 @@ def parse_objdump(file_name):
     for line in lines:
         match = instruction_pattern.match(line)
         if match:
-            address, value, instruction = match.groups()
+            address, value, instruction, content = match.groups()
             starting_address = int(address, 16)
             print("First address acquired: " + str(starting_address) + "\n")
             break
@@ -30,7 +30,7 @@ def parse_objdump(file_name):
     for line in tqdm(lines, desc='Building dict', unit='line'):
         match = instruction_pattern.match(line)
         if match:
-            address, value, instruction = match.groups()
+            address, value, instruction, content = match.groups()
             identifier_value = format(int(value[1], 16), '04b')
             whole_instruction = format(int(value, 16), '032b')
             group = typeChooser(whole_instruction)
@@ -59,6 +59,7 @@ def parse_objdump(file_name):
                 'value': value,                         # Instruction value in hex
                 'whole_binary': whole_instruction,      # Instruction value in binary
                 'group': group,                         # General instruction macro group
+                'content': content,                     # Instruction content
             })
             index += 1
     print("Done!\n")

@@ -146,7 +146,10 @@ while True: # main game loop
                 continue
                 
             try:
-              #print("Instruction:", clickedInstruction)
+              print("Instruction:", clickedInstruction)
+              if clickedInstruction['group'] == 'BRANCH':
+                 target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
+                 print("Branch target:", target)
               mnemonic = clickedInstruction['instruction']
               address = clickedInstruction['address']
             except Exception as e:

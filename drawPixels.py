@@ -28,6 +28,12 @@ def get_instructio_by_memory_index(lst, index):
             return item
     return "No relative Index"  # Return None if the item with the specified index is not found
 
+def get_instruction_by_address(lst, address):
+    for item in lst:
+        if 'address' in item and item['address'] == address:
+            return item
+    return "No address"  # Return None if the item with the specified index is not found
+
 def coord(pos, screenX, screenY, virtPixelSize):
     y=pos//(screenY//virtPixelSize)
     x=pos%(screenY//virtPixelSize)
