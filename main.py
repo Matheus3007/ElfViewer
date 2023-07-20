@@ -55,7 +55,7 @@ group_ammounts = [0,0,0,0,0,0,0,0,0]
 #print(group_types)
 line = '''--------------------------------------------------------------------------------------------------------------'''
 app_title = '''
-Welcome to your favourite brand new and improved, elf file visualizer:
+Welcome to your favourite brand new and improved, interactive elf file visualizer:
 --------------------------------------------------------------------------------------------------------------              
    ,ggggggg,                          ,ggg,         ,gg                                                  
  ,dP""""""Y8b ,dPYb, ,dPYb,          dP""Y8a       ,8P                                                   
@@ -102,6 +102,7 @@ group_ammounts[-1] = count
 print(tabulate([group_ammounts], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
 dialogue_box_active = False
+highlight_on = False
 
 #### Main loop
 
@@ -166,14 +167,19 @@ while True: # main game loop
                 
             elif dialogue_box_active:
                 dialogue_box_active = False
+
+            if not highlight_on:
+                highlight_on = True
+            elif highlight_on:
+                highlight_on = False
                 
     DISPLAYSURF.fill(groupColor['background'])
     for instruction in instructions:
         color = groupColor[instruction['group']]
         dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
-    if dialogue_box_active:
-        
+    if dialogue_box_active:       
         dp.display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
-
+    if highlight_on:
+        dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction['index'],screenX)
 
     pygame.display.update()
