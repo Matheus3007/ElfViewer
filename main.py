@@ -190,11 +190,18 @@ while True: # main game loop
         color = groupColor[instruction['group']]
         dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
     
-    if highlight_on:  
-        originTopX, originTopY, originBottomX, originBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction['index'],screenX)
+    if highlight_on:
+        try:
+            originTopX, originTopY, originBottomX, originBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction[renderStyle],screenX)
+        except Exception as e:
+            #print("No instruction found, address "+ str(clickedInstruction) + " is not an instruction")
+            continue
     if branch_highlight_on:
-        destinyTopX, destinyTopY, destinyBottomX, destinyBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),target['index'],screenX)
-        pygame.draw.line(DISPLAYSURF, (0,0,0), (originBottomX, originBottomY), (destinyTopX, destinyTopY), 2)
+        try:
+            destinyTopX, destinyTopY, destinyBottomX, destinyBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),target[renderStyle],screenX)
+            pygame.draw.line(DISPLAYSURF, (0,0,0), (originBottomX, originBottomY), (destinyTopX, destinyTopY), 2)
+        except Exception as e:
+            continue
     if dialogue_box_active:       
         dp.display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
 

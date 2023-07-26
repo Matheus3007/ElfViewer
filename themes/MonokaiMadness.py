@@ -1,7 +1,7 @@
 name = "MonokaiMadness"
 theme = {
     "LOAD STORE": (249, 38, 114),              # Fuchsia Pink
-    "BRANCH": (249, 38, 114),                  # Fuchsia Pink
+    "BRANCH": (249, 100, 114),                  # Fuchsia Pink
     "ALU": (166, 226, 46),                     # Green
     "COPROCESSOR": (249, 88, 38),              # Orange
     "LOAD STORE MULTIPLE": (102, 217, 239),    # Sky Blue
