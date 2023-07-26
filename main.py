@@ -102,7 +102,10 @@ for instruction in tqdm(instructions, desc="Rendering and creating table",unit="
 print("\n")
 group_ammounts[-1] = count
 #print("Group ammounts:", group_ammounts)
-print(tabulate([group_ammounts], headers=group_types, tablefmt="fancy_grid"))
+group_percentages = []
+for i in group_ammounts[:8]:
+    group_percentages.append(str("{:.4f}".format((i/group_ammounts[8])*100)) + "%")
+print(tabulate([group_ammounts, group_percentages], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
 dialogue_box_active = False
 highlight_on = False

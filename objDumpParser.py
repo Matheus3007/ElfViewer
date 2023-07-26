@@ -2,10 +2,18 @@ import re
 import csv
 from tqdm import tqdm
 from typeChooser import typeChooser
-alu_mnemonic_list = ["and", "eor", "sub", "rsb", "add", "adc", "sbc", "rsc", "tst", "teq", "cmp", "cmn", "orr", "mov", "bic", "mvn", "mul"]
+
+alu_mnemonic_list = ["and", "eor", "sub", "rsb", "add", "adc", "sbc", 
+                     "rsc", "tst", "teq", "cmp", "cmn", "orr", "mov", 
+                     "bic", "mvn", "mul"]
+
 stack_mnemonic_list = ["push", "pop"]
-shift_list = ["lsl", "lsr", "asr", "ror", "rrx"]
-coprocessor_list = ["cdp", "mcr", "mrc", "ldc", "stc", "mrs", "msr"]
+
+shift_list = ["lsl", "lsr", "asr", 
+              "ror", "rrx"]
+
+coprocessor_list = ["cdp", "mcr", "mrc", "ldc", 
+                    "stc", "mrs", "msr"]
 def parse_objdump(file_name):
     with open(file_name, 'r') as file:
         lines = file.readlines()
@@ -35,6 +43,7 @@ def parse_objdump(file_name):
             whole_instruction = format(int(value, 16), '032b')
             group = typeChooser(whole_instruction)
             memory_index = int(((int(address, 16) - starting_address))/4)
+            
             if group == "BRANCH" and instruction[:1] != "b":
                 group = "UNDEFINED"
             if instruction == "msr":
