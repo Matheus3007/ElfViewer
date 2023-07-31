@@ -47,5 +47,5 @@ def display_color_dialogue(theme, screen):
     for i in range(num_colors):
         pygame.draw.rect(screen, colors[i], (10, (i*EXAMPLE_SIDE)+10, EXAMPLE_SIDE, EXAMPLE_SIDE))
         # writes description of color
-        text = font.render(descriptions[i], True, (0, 0, 0))
+        text = font.render(descriptions[i], True, (255, 255, 255))
         screen.blit(text, (EXAMPLE_SIDE+15, (i*(EXAMPLE_SIDE))+30))
