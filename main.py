@@ -2,8 +2,9 @@
 # - Implement branch direction highlighting for relative mode
 
 import pygame, sys
-from typeChooser import typeChooser
+#from typeChooser import typeChooser
 from objDumpParser import parse_objdump
+from colorDialogueRenderer import display_color_dialogue
 from pygame.locals import *
 from pygame import gfxdraw
 from tqdm import tqdm
@@ -110,6 +111,7 @@ print(tabulate([group_ammounts, group_percentages], headers=group_types, tablefm
 dialogue_box_active = False
 highlight_on = False
 branch_highlight_on = False
+display_color_description = False
 
 #### Main loop
 
@@ -122,12 +124,16 @@ while True: # main game loop
                 print("\nBye!")
                 pygame.quit()
                 sys.exit()
+            if event.key == pygame.K_l:
+                display_color_description = not (display_color_description)
         if event.type == QUIT:
             
             pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
+            if display_color_description:
+                display_color_description = not (display_color_description)
             mouse_pos = pygame.mouse.get_pos()
         
             branch_highlight_on = False
@@ -207,5 +213,6 @@ while True: # main game loop
             continue
     if dialogue_box_active:       
         dp.display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
-
+    if display_color_description:
+        display_color_dialogue(groupColor, DISPLAYSURF)
     pygame.display.update()
