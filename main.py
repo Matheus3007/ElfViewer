@@ -161,7 +161,7 @@ while True: # main game loop
                 continue
                 
             try:
-              print("Instruction:", clickedInstruction)
+              #print("Instruction:", clickedInstruction)
               if not highlight_on:
                 if clickedInstruction['group'] == 'BRANCH' and clickedInstruction['instruction'][:2] != 'bl':
                     target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
@@ -170,7 +170,7 @@ while True: # main game loop
                     elif branch_highlight_on:
                         branch_highlight_on = False
 
-                    print("Branch target:", target)
+                    #print("Branch target:", target)
               mnemonic = clickedInstruction['instruction']
               address = clickedInstruction['address']
             except Exception as e:
