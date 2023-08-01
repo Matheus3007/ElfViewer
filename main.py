@@ -53,7 +53,9 @@ except ImportError:
 #######################################################################################
 
 group_types = list(theme_module.theme)
-group_types = group_types[:8]
+print(group_types)
+print(len(group_types))
+group_types = group_types[:13]
 group_types.append("Total")
 group_ammounts = [0,0,0,0,0,0,0,0,0]
 #print(group_types)
@@ -98,14 +100,17 @@ count = 0
 for instruction in tqdm(instructions, desc="Rendering and creating table",unit="instructions"):
     count += 1
     color = groupColor[instruction['group']]
-    group_ammounts[group_types.index(instruction['group'])] += 1
+    try:
+        group_ammounts[group_types.index(instruction['group'])] += 1
+    except Exception as e:
+        pass
     dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
 print("\n")
 group_ammounts[-1] = count
 #print("Group ammounts:", group_ammounts)
 group_percentages = []
-for i in group_ammounts[:8]:
-    group_percentages.append(str("{:.4f}".format((i/group_ammounts[8])*100)) + "%")
+for i in group_ammounts[:13]:
+    group_percentages.append(str("{:.4f}".format((i/group_ammounts[-1])*100)) + "%")
 print(tabulate([group_ammounts, group_percentages], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
 dialogue_box_active = False
@@ -163,7 +168,7 @@ while True: # main game loop
             try:
               #print("Instruction:", clickedInstruction)
               if not highlight_on:
-                if clickedInstruction['group'] == 'BRANCH' and clickedInstruction['instruction'][:2] != 'bl':
+                if clickedInstruction['group'] == 'Desvios' and clickedInstruction['instruction'][:2] != 'bl':
                     target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
                     if not branch_highlight_on:
                         branch_highlight_on = True

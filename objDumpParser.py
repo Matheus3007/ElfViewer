@@ -1,7 +1,8 @@
 import re
-import csv
 from tqdm import tqdm
-from typeChooser import typeChooser
+from typeChooser import typeChooser, nameChooser
+
+
 
 alu_mnemonic_list = ["and", "eor", "sub", "rsb", "add", "adc", "sbc", 
                      "rsc", "tst", "teq", "cmp", "cmn", "orr", "mov", 
@@ -42,8 +43,9 @@ def parse_objdump(file_name):
             identifier_value = format(int(value[1], 16), '04b')
             whole_instruction = format(int(value, 16), '032b')
             group = typeChooser(whole_instruction)
+            group = nameChooser(instruction)
             memory_index = int(((int(address, 16) - starting_address))/4)
-            
+            '''
             if group == "BRANCH" and instruction[:1] != "b":
                 group = "UNDEFINED"
             if instruction == "msr":
@@ -60,6 +62,7 @@ def parse_objdump(file_name):
                 group = "COPROCESSOR"
             if group == "UNDEFINED" and (instruction[:2] == "ld" or instruction[:2] == "st"):
                 group = "LOAD STORE"
+            '''
             instructions.append({
                 'index': index,                         # General dict index
                 'memory_index': memory_index,           # Memory index, relative to the processor's memory
