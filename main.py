@@ -57,7 +57,7 @@ print(group_types)
 print(len(group_types))
 group_types = group_types[:13]
 group_types.append("Total")
-group_ammounts = [0,0,0,0,0,0,0,0,0]
+group_ammounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 #print(group_types)
 line = '''--------------------------------------------------------------------------------------------------------------'''
 app_title = '''
@@ -107,7 +107,7 @@ for instruction in tqdm(instructions, desc="Rendering and creating table",unit="
     dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
 print("\n")
 group_ammounts[-1] = count
-#print("Group ammounts:", group_ammounts)
+print("Group ammounts:", group_ammounts)
 group_percentages = []
 for i in group_ammounts[:13]:
     group_percentages.append(str("{:.4f}".format((i/group_ammounts[-1])*100)) + "%")
@@ -127,6 +127,7 @@ while True: # main game loop
             if event.key == pygame.K_ESCAPE:
                 print(line)
                 print("\nBye!")
+                pygame.image.save(DISPLAYSURF, "output.png")
                 pygame.quit()
                 sys.exit()
             if event.key == pygame.K_l:
