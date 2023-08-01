@@ -1,12 +1,17 @@
 name = "DraculasDelight"
 theme = {
-    "LOAD STORE": (42, 161, 152),               # Turquoise
-    "BRANCH": (189, 147, 249),                  # Lavender
-    "ALU": (255, 85, 85),                       # Red
-    "COPROCESSOR": (255, 214, 153),             # Apricot
-    "LOAD STORE MULTIPLE": (189, 147, 249),     # Lavender
-    "LOAD STORE INDEXED": (192, 207, 216),      # Steel Blue
-    "UNDEFINED": (130, 130, 130),               # Grey
-    "STACK": (133, 153, 0),                     # Chartreuse
-    "background": (40, 42, 54)                  # Dracula Background Color
+    "ULA": (198, 120, 221),                # COLOR = Lavender
+    "Acesso a memoria": (103, 218, 130),    # COLOR = Malachite
+    "Desvios": (97, 175, 239),             # COLOR = Sky Blue
+    "Pilha": (179, 168, 89),               # COLOR = Medallion
+    "Rotacoes": (80, 168, 176),            # COLOR = Cyanite
+    "Acesso a memoria com PF": (129, 213, 216),  # COLOR = Light Sky Blue
+    "Acesso a memoria multiplo": (224, 108, 117),# COLOR = Blush
+    "UNDEFINED": (68, 71, 90),                   # COLOR = Ebony Clay
+    "Coprocessadores": (228, 159, 125),          # COLOR = Rajah
+    "ULA com PF": (246, 185, 59),                # COLOR = Saffron
+    "Modo supervisor": (191, 97, 106),           # COLOR = Aurora Red
+    "Operacoes com vetores": (195, 95, 149),      # COLOR = Lavender Rose
+    "Nop": (173, 127, 168),                      # COLOR = Aurora Purple
+    "background": (46, 52, 64)                   # COLOR = Polar Night Darkest
 }

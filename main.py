@@ -94,9 +94,9 @@ pygame.display.set_caption("ElfoViewer")
 pygame.display.set_icon(icon)
 DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
 
-
 #### Draws elf layout
 count = 0
+DISPLAYSURF.fill(groupColor['background'])
 for instruction in tqdm(instructions, desc="Rendering and creating table",unit="instructions"):
     count += 1
     color = groupColor[instruction['group']]
@@ -105,6 +105,7 @@ for instruction in tqdm(instructions, desc="Rendering and creating table",unit="
     except Exception as e:
         pass
     dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
+AUXSURF = DISPLAYSURF.copy()
 print("\n")
 group_ammounts[-1] = count
 print("Group ammounts:", group_ammounts)
@@ -200,11 +201,9 @@ while True: # main game loop
                 highlight_on = False
            
                 
-    DISPLAYSURF.fill(groupColor['background'])
-    for instruction in instructions:
-        color = groupColor[instruction['group']]
-        dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
+    ## Fill the screen with background color
     
+    DISPLAYSURF.blit(AUXSURF, (0,0))    
     if highlight_on:
         try:
             originTopX, originTopY, originBottomX, originBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction[renderStyle],screenX)
