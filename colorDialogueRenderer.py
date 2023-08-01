@@ -1,9 +1,10 @@
 import pygame
 import sys
 
+rightMargin = 85
 def display_color_dialogue_test(theme):
     pygame.init()
-    EXAMPLE_SIDE = 50
+    EXAMPLE_SIDE = 10
 
     keys = list(theme.keys())
     colors = [theme[key] for key in keys if key != "background"]
@@ -43,9 +44,9 @@ def display_color_dialogue(theme, screen):
     pygame.display.set_caption("Color Dialogue")
     
     font = pygame.font.SysFont(None, 20)      
-    pygame.draw.rect(screen, theme["background"],(5, 5, (EXAMPLE_SIDE * 5)+10, (num_colors*EXAMPLE_SIDE)+10))  
+    pygame.draw.rect(screen, theme["background"],(5, 5, (EXAMPLE_SIDE * (EXAMPLE_SIDE//10))+rightMargin, (num_colors*EXAMPLE_SIDE)+(EXAMPLE_SIDE//5)))  
     for i in range(num_colors):
-        pygame.draw.rect(screen, colors[i], (10, (i*EXAMPLE_SIDE)+10, EXAMPLE_SIDE, EXAMPLE_SIDE))
+        pygame.draw.rect(screen, colors[i], (10, (i*EXAMPLE_SIDE)+(EXAMPLE_SIDE//5), EXAMPLE_SIDE, EXAMPLE_SIDE))
         # writes description of color
         text = font.render(descriptions[i], True, (255, 255, 255))
         screen.blit(text, (EXAMPLE_SIDE+15, (i*(EXAMPLE_SIDE))+30))

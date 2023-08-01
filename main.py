@@ -53,9 +53,11 @@ except ImportError:
 #######################################################################################
 
 group_types = list(theme_module.theme)
-group_types = group_types[:8]
+print(group_types)
+print(len(group_types))
+group_types = group_types[:13]
 group_types.append("Total")
-group_ammounts = [0,0,0,0,0,0,0,0,0]
+group_ammounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 #print(group_types)
 line = '''--------------------------------------------------------------------------------------------------------------'''
 app_title = '''
@@ -92,20 +94,24 @@ pygame.display.set_caption("ElfoViewer")
 pygame.display.set_icon(icon)
 DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
 
-
 #### Draws elf layout
 count = 0
+DISPLAYSURF.fill(groupColor['background'])
 for instruction in tqdm(instructions, desc="Rendering and creating table",unit="instructions"):
     count += 1
     color = groupColor[instruction['group']]
-    group_ammounts[group_types.index(instruction['group'])] += 1
+    try:
+        group_ammounts[group_types.index(instruction['group'])] += 1
+    except Exception as e:
+        pass
     dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
+AUXSURF = DISPLAYSURF.copy()
 print("\n")
 group_ammounts[-1] = count
-#print("Group ammounts:", group_ammounts)
+print("Group ammounts:", group_ammounts)
 group_percentages = []
-for i in group_ammounts[:8]:
-    group_percentages.append(str("{:.4f}".format((i/group_ammounts[8])*100)) + "%")
+for i in group_ammounts[:13]:
+    group_percentages.append(str("{:.4f}".format((i/group_ammounts[-1])*100)) + "%")
 print(tabulate([group_ammounts, group_percentages], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
 dialogue_box_active = False
@@ -122,6 +128,7 @@ while True: # main game loop
             if event.key == pygame.K_ESCAPE:
                 print(line)
                 print("\nBye!")
+                pygame.image.save(DISPLAYSURF, "output.png")
                 pygame.quit()
                 sys.exit()
             if event.key == pygame.K_l:
@@ -163,7 +170,7 @@ while True: # main game loop
             try:
               #print("Instruction:", clickedInstruction)
               if not highlight_on:
-                if clickedInstruction['group'] == 'BRANCH' and clickedInstruction['instruction'][:2] != 'bl':
+                if clickedInstruction['group'] == 'Desvios' and clickedInstruction['instruction'][:2] != 'bl':
                     target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
                     if not branch_highlight_on:
                         branch_highlight_on = True
@@ -194,11 +201,9 @@ while True: # main game loop
                 highlight_on = False
            
                 
-    DISPLAYSURF.fill(groupColor['background'])
-    for instruction in instructions:
-        color = groupColor[instruction['group']]
-        dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
+    ## Fill the screen with background color
     
+    DISPLAYSURF.blit(AUXSURF, (0,0))    
     if highlight_on:
         try:
             originTopX, originTopY, originBottomX, originBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction[renderStyle],screenX)

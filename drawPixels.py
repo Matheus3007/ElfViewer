@@ -4,7 +4,6 @@ from objDumpParser import parse_objdump
 from pygame.locals import *
 from pygame import gfxdraw
 import sys
-import importlib
 
 def drawVirtPixel(surface, xOrigin, yOrigin, color, newSize):
     for x in range(newSize):

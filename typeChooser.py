@@ -1,3 +1,8 @@
+import json
+
+with open('instructions.json', 'r') as f:
+    classification_lists = json.load(f)
+
 def typeChooser(instruction):
     if instruction[-28] == "0": # 0__
         if instruction[-27] == "0": # 00_
@@ -41,3 +46,8 @@ def typeChooser(instruction):
                 return "COPROCESSOR"
                 print("Move coprocessador")
             
+def nameChooser(instruction):
+    for i in classification_lists:
+        if instruction in classification_lists[i]:
+            return i
+    return "UNDEFINED"
