@@ -1,0 +1,41 @@
+
+kernel.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00008000 <_start>:
+    8000:	e3a02c01 	mov	r2, #256	@ 0x100
+
+00008004 <_clean>:
+    8004:	e3a01000 	mov	r1, #0
+    8008:	e3a00000 	mov	r0, #0
+
+0000800c <_loop>:
+    800c:	e5923000 	ldr	r3, [r2]
+    8010:	e5924004 	ldr	r4, [r2, #4]
+    8014:	e1530004 	cmp	r3, r4
+    8018:	ca000004 	bgt	8030 <_troca>
+
+0000801c <_retorno>:
+    801c:	e2822004 	add	r2, r2, #4
+    8020:	e2800001 	add	r0, r0, #1
+    8024:	e350001f 	cmp	r0, #31
+    8028:	0a000005 	beq	8044 <_avaliaFim>
+    802c:	eafffff6 	b	800c <_loop>
+
+00008030 <_troca>:
+    8030:	e3a01001 	mov	r1, #1
+    8034:	e5925000 	ldr	r5, [r2]
+    8038:	e5824000 	str	r4, [r2]
+    803c:	e5825004 	str	r5, [r2, #4]
+    8040:	eafffff5 	b	801c <_retorno>
+
+00008044 <_avaliaFim>:
+    8044:	e3510000 	cmp	r1, #0
+    8048:	0a000001 	beq	8054 <_end>
+    804c:	e3a02c01 	mov	r2, #256	@ 0x100
+    8050:	eaffffeb 	b	8004 <_clean>
+
+00008054 <_end>:
+    8054:	eafffffe 	b	8054 <_end>

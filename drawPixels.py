@@ -4,20 +4,12 @@ from objDumpParser import parse_objdump
 from pygame.locals import *
 from pygame import gfxdraw
 import sys
-import importlib
 
-
-
-# Parameters
-# For small dumps
-
-
-# Methods
 def drawVirtPixel(surface, xOrigin, yOrigin, color, newSize):
     for x in range(newSize):
         for y in range(newSize):
             if (x==0 or y==0 or x==newSize-1 or y ==newSize-1):
-                #gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, borderColor)
+                #gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, (0,0,0))
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
             else:
                 gfxdraw.pixel(surface, (newSize*xOrigin)+x, (newSize*yOrigin)+y, color)
@@ -27,6 +19,12 @@ def get_instructio_by_memory_index(lst, index):
         if 'memory_index' in item and item['memory_index'] == index:
             return item
     return "No relative Index"  # Return None if the item with the specified index is not found
+
+def get_instruction_by_address(lst, address):
+    for item in lst:
+        if 'address' in item and item['address'] == address:
+            return item
+    return "No address"  # Return None if the item with the specified index is not found
 
 def coord(pos, screenX, screenY, virtPixelSize):
     y=pos//(screenY//virtPixelSize)
@@ -67,109 +65,11 @@ def display_dialogue_box(text, position, screen):
     screen.blit(dialogue_text, dialogue_box.move(5, 5))
     pygame.display.flip()
 
-'''
-default_theme = "DebuggersDream"
-theme_arg = sys.argv[1] if len(sys.argv) > 1 else default_theme
-try:
-    # Load the selected theme module dynamically
-    theme_module = importlib.import_module(f"themes.{theme_arg}")
-    groupColor = theme_module.theme
-    theme_name = theme_module.name
-except ImportError:
-    print("Invalid theme selection.")
-    sys.exit(1)
-
-default_params = "average"
-params_arg = sys.argv[2] if len(sys.argv) > 2 else default_params
-try:
-    # Load the selected theme module dynamically
-    param_module = importlib.import_module(f"renderParams.{params_arg}")
-    virtPixelSize = param_module.renderParams["virtPixelSize"]
-    screenX = param_module.renderParams["screenX"]
-    screenY = param_module.renderParams["screenY"]
-    fillColor = param_module.renderParams["fillColor"]
-    borderColor = param_module.renderParams["borderColor"]
-except ImportError:
-    print("Invalid render parameter selection.")
-    sys.exit(1)
-
-# Reads input with objdump file name and parses it
-objdumpFileName = input("Enter objdump file name: ")
-instructions = parse_objdump(objdumpFileName)
-icon = pygame.image.load("bruninho.jpg")
-pygame.init()
-pygame.display.set_caption("ElfoViewer")
-pygame.display.set_icon(icon)
-DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
-
-
-
-drawVirtPixel(DISPLAYSURF, 0,0,fillColor ,virtPixelSize)
-drawVirtPixel(DISPLAYSURF, 1,1,fillColor,virtPixelSize)
-fillRegion(DISPLAYSURF, 0, 123, fillColor)
-fillRegion(DISPLAYSURF, 124, 130, (0,255,0))
-fillRegion(DISPLAYSURF, 140, 2000, (0,0,255))
-fillRegion(DISPLAYSURF, 2500, 3000, (0,255,255))
-
-fillRegion(DISPLAYSURF, 3200, 3201, (0,255,255))
-fillRegion(DISPLAYSURF, 3201, 3202, ((0,0,255)))
-drawPixelRelative(DISPLAYSURF, 3202, (0,255,0))
-
-
-# Relates each group to a color
-
-# Draws each instruction in the screen
-for instruction in instructions:
-    color = groupColor[instruction['group']]
-    drawPixelRelative(DISPLAYSURF, instruction['memory_index'], color)
-
-dialogue_box_active = False
-dialogue_box_text = ""
-dialogue_box_position = (0, 0)
-dialogue_box_timer = 0
-
-
-while True: # main game loop
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Get the mouse position
-            mouse_pos = pygame.mouse.get_pos()
-
-            print("Mouse clicked at coordinates:", mouse_pos)
-            # prints mouse x and y coords to shell
-            x = mouse_pos[0]
-            y = mouse_pos[1]
-            # finds which pixel was clicked on
-            pixelX = (x//(virtPixelSize))
-            pixelY = (y//(virtPixelSize)) 
-            clickIndex = (screenX//virtPixelSize * (pixelY)) + pixelX
-            print("Pixel clicked at coordinates:", pixelX, pixelY)
-            print("Index:", clickIndex)
-            clickedInstruction = get_instructio_by_memory_index(instructions, clickIndex)
-            print("Instruction:", clickedInstruction)
-            mnemonic = clickedInstruction['instruction']
-            address = clickedInstruction['address']
-            dialogue_content = "Address: " +"0x"+ address + " | " + "Instruction: " + mnemonic
-            if not dialogue_box_active:
-                dialogue_box_text = "This is a sample dialogue."
-                dialogue_box_position = event.pos
-                dialogue_box_active = True
-                dialogue_box_timer = pygame.time.get_ticks()
-                
-            elif dialogue_box_active:
-                dialogue_box_active = False
-                
-    DISPLAYSURF.fill(groupColor['background'])
-    for instruction in instructions:
-        color = groupColor[instruction['group']]
-        drawPixelRelative(DISPLAYSURF, instruction['memory_index'], color)
-    if dialogue_box_active:
-        
-        display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
-
-
-    pygame.display.update()
-'''
+def highlight_virtpixel_border(surface, virtPixelSize, color, index, screenX):
+    line = (index//(screenX//virtPixelSize))
+    column = (index%(screenX//virtPixelSize))
+    xCorner = column * virtPixelSize
+    yCorner = line * virtPixelSize
+    # Draws a border around the pixel starting in xCorner, yCorner with virtPixelSize as a side and using pygame rect
+    pygame.draw.rect(surface, color, (xCorner, yCorner, virtPixelSize, virtPixelSize), 2)
+    return xCorner, yCorner, xCorner+virtPixelSize, yCorner+virtPixelSize
