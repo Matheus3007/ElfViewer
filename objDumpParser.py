@@ -3,6 +3,24 @@ import csv
 from tqdm import tqdm
 from typeChooser import typeChooser
 
+<<<<<<< Updated upstream
+=======
+
+'''
+alu_mnemonic_list = ["and", "eor", "sub", "rsb", "add", "adc", "sbc", 
+                     "rsc", "tst", "teq", "cmp", "cmn", "orr", "mov", 
+                     "bic", "mvn", "mul"]
+
+stack_mnemonic_list = ["push", "pop"]
+
+shift_list = ["lsl", "lsr", "asr", 
+              "ror", "rrx"]
+
+coprocessor_list = ["cdp", "mcr", "mrc", "ldc", 
+                    "stc", "mrs", "msr"]
+'''
+
+>>>>>>> Stashed changes
 def parse_objdump(file_name):
     with open(file_name, 'r') as file:
         lines = file.readlines()
