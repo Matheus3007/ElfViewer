@@ -14,6 +14,7 @@ Isso feito, tudo deve estar OK na sua máquina.
 
 # Executando
 Para executar, basta rodar python `./main.py` e um display irá abrir requisitando um arquivo de texto. Esse arquivo deve ser um disassemble de qualquer executável ARM32, feito através de um comando `objdump -S`, para que dessa forma, todas as informações necessárias para a renderização da imagem.
+
 Ao final da execução, é possível sair apertando `esc`, e quando isso é feito, uma imagem com a saída inicial do programa é salva em `output.png`. Bem legal se você quer usar alguma coisa de plano de fundo ou pra demonstração!
 ## Parâmetros
 Alguns parâmetros opcionais podem ser fornecidos para o programa ao chamar a main. Eles são os seguintes (a ordem deve ser respeitada):
