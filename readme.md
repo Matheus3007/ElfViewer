@@ -26,7 +26,7 @@ Alguns parâmetros opcionais podem ser fornecidos para o programa ao chamar a ma
 
 Um exemplo de chamada é o seguinte:
 ```
-.\main.py tiny linear DraculasDelight
+python main.py tiny linear DraculasDelight
 ```
 Este comando chama o programa no modo de renderização tiny, com instruções posicionadas sequencialmente e com o tema de cores Dracula.
 
