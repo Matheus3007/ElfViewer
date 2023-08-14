@@ -88,7 +88,7 @@ instructions = parse_objdump(input_file)
 
 ##### Initializes PyGame surface and sets up the window #####
 
-icon = pygame.image.load("bruninho.jpg")
+icon = pygame.image.load("icone.jpg")
 pygame.init()
 pygame.display.set_caption("ElfoViewer")
 pygame.display.set_icon(icon)
@@ -120,8 +120,8 @@ branch_highlight_on = False
 display_color_description = False
 
 #### Main loop
-
-while True: # main game loop
+run = True
+while run: # main game loop
     for event in pygame.event.get():
         ## Quits when esc is pressed
         if event.type == pygame.KEYDOWN:
@@ -129,14 +129,12 @@ while True: # main game loop
                 print(line)
                 print("\nBye!")
                 pygame.image.save(DISPLAYSURF, "output.png")
-                pygame.quit()
-                sys.exit()
+                run = False
             if event.key == pygame.K_l:
                 display_color_description = not (display_color_description)
         if event.type == QUIT:
-            
-            pygame.quit()
-            sys.exit()
+            run = False
+            print("\nBye!")
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
             if display_color_description:
@@ -221,3 +219,5 @@ while True: # main game loop
     if display_color_description:
         display_color_dialogue(groupColor, DISPLAYSURF)
     pygame.display.update()
+
+pygame.quit()
