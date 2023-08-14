@@ -1,9 +1,14 @@
+### TODO:
+# - Implement branch direction highlighting for relative mode
+
 import pygame, sys
-from typeChooser import typeChooser
+#from typeChooser import typeChooser
 from objDumpParser import parse_objdump
+from colorDialogueRenderer import display_color_dialogue
 from pygame.locals import *
 from pygame import gfxdraw
 from tqdm import tqdm
+from tabulate import tabulate
 import sys
 import importlib
 import drawPixels as dp
@@ -47,8 +52,16 @@ except ImportError:
     sys.exit(1)
 #######################################################################################
 
+group_types = list(theme_module.theme)
+print(group_types)
+print(len(group_types))
+group_types = group_types[:13]
+group_types.append("Total")
+group_ammounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+#print(group_types)
+line = '''--------------------------------------------------------------------------------------------------------------'''
 app_title = '''
-Welcome to your favourite brand new and improved, elf file visualizer:
+Welcome to your favourite brand new and improved, interactive elf file visualizer:
 --------------------------------------------------------------------------------------------------------------              
    ,ggggggg,                          ,ggg,         ,gg                                                  
  ,dP""""""Y8b ,dPYb, ,dPYb,          dP""Y8a       ,8P                                                   
@@ -81,30 +94,57 @@ pygame.display.set_caption("ElfoViewer")
 pygame.display.set_icon(icon)
 DISPLAYSURF = pygame.display.set_mode((screenX, screenY))
 
-
 #### Draws elf layout
-
-for instruction in instructions:
+count = 0
+DISPLAYSURF.fill(groupColor['background'])
+for instruction in tqdm(instructions, desc="Rendering and creating table",unit="instructions"):
+    count += 1
     color = groupColor[instruction['group']]
+    try:
+        group_ammounts[group_types.index(instruction['group'])] += 1
+    except Exception as e:
+        pass
     dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
-
-
+AUXSURF = DISPLAYSURF.copy()
+print("\n")
+group_ammounts[-1] = count
+print("Group ammounts:", group_ammounts)
+group_percentages = []
+for i in group_ammounts[:13]:
+    group_percentages.append(str("{:.4f}".format((i/group_ammounts[-1])*100)) + "%")
+print(tabulate([group_ammounts, group_percentages], headers=group_types, tablefmt="fancy_grid"))
 #### Setups variables to organize dialogue box life
-
 dialogue_box_active = False
+highlight_on = False
+branch_highlight_on = False
+display_color_description = False
 
 #### Main loop
 
 while True: # main game loop
     for event in pygame.event.get():
+        ## Quits when esc is pressed
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                print(line)
+                print("\nBye!")
+                pygame.image.save(DISPLAYSURF, "output.png")
+                pygame.quit()
+                sys.exit()
+            if event.key == pygame.K_l:
+                display_color_description = not (display_color_description)
         if event.type == QUIT:
+            
             pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             # Get the mouse position
+            if display_color_description:
+                display_color_description = not (display_color_description)
             mouse_pos = pygame.mouse.get_pos()
-
-            print("Mouse clicked at coordinates:", mouse_pos)
+        
+            branch_highlight_on = False
+            #print("Mouse clicked at coordinates:", mouse_pos)
             # prints mouse x and y coords to shell
             x = mouse_pos[0]
             y = mouse_pos[1]
@@ -112,27 +152,36 @@ while True: # main game loop
             pixelX = (x//(virtPixelSize))
             pixelY = (y//(virtPixelSize)) 
             clickIndex = (screenX//virtPixelSize * (pixelY)) + pixelX
-            print("Pixel clicked at coordinates:", pixelX, pixelY)
-            print("Index:", clickIndex)
+            #print("Pixel clicked at coordinates:", pixelX, pixelY)
+            #print("Index:", clickIndex)
             if renderStyle == 'memory_index':
               try:
                 clickedInstruction = dp.get_instructio_by_memory_index(instructions, clickIndex)
               except Exception as e:
-                print("No instruction found")
+                #print("No instruction found")
                 continue
             elif renderStyle == 'index':
               try:
                 clickedInstruction = instructions[clickIndex]    
               except Exception as e:
-                print("No instruction found")
+                #print("No instruction found")
                 continue
                 
             try:
-              print("Instruction:", clickedInstruction)
+              #print("Instruction:", clickedInstruction)
+              if not highlight_on:
+                if clickedInstruction['group'] == 'Desvios' and clickedInstruction['instruction'][:2] != 'bl':
+                    target = dp.get_instruction_by_address(instructions, clickedInstruction['content'].split()[0])
+                    if not branch_highlight_on:
+                        branch_highlight_on = True
+                    elif branch_highlight_on:
+                        branch_highlight_on = False
+
+                    #print("Branch target:", target)
               mnemonic = clickedInstruction['instruction']
               address = clickedInstruction['address']
             except Exception as e:
-              print("No instruction found, address "+ str(clickedInstruction) + " is not an instruction")
+              #print("No instruction found, address "+ str(clickedInstruction) + " is not an instruction")
               continue
                 
             
@@ -145,14 +194,30 @@ while True: # main game loop
                 
             elif dialogue_box_active:
                 dialogue_box_active = False
+
+            if not highlight_on:
+                highlight_on = True
+            elif highlight_on:
+                highlight_on = False
+           
                 
-    DISPLAYSURF.fill(groupColor['background'])
-    for instruction in instructions:
-        color = groupColor[instruction['group']]
-        dp.drawPixelRelative(DISPLAYSURF, instruction[renderStyle], color, screenX, screenY, virtPixelSize)
-    if dialogue_box_active:
-        
+    ## Fill the screen with background color
+    
+    DISPLAYSURF.blit(AUXSURF, (0,0))    
+    if highlight_on:
+        try:
+            originTopX, originTopY, originBottomX, originBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),clickedInstruction[renderStyle],screenX)
+        except Exception as e:
+            #print("No instruction found, address "+ str(clickedInstruction) + " is not an instruction")
+            continue
+    if branch_highlight_on:
+        try:
+            destinyTopX, destinyTopY, destinyBottomX, destinyBottomY = dp.highlight_virtpixel_border(DISPLAYSURF, virtPixelSize, (0,0,0),target[renderStyle],screenX)
+            pygame.draw.line(DISPLAYSURF, (0,0,0), (originBottomX, originBottomY), (destinyTopX, destinyTopY), 2)
+        except Exception as e:
+            continue
+    if dialogue_box_active:       
         dp.display_dialogue_box(dialogue_content, dialogue_box_position, DISPLAYSURF)
-
-
+    if display_color_description:
+        display_color_dialogue(groupColor, DISPLAYSURF)
     pygame.display.update()

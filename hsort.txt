@@ -1,0 +1,55 @@
+
+kernel.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00008000 <heapify>:
+    8000:	e92d4004 	push	{r2, lr}
+    8004:	e2412001 	sub	r2, r1, #1
+    8008:	e1a020a2 	lsr	r2, r2, #1
+
+0000800c <heapify_loop>:
+    800c:	eb000002 	bl	801c <sift_down>
+    8010:	e2522001 	subs	r2, r2, #1
+    8014:	5afffffc 	bpl	800c <heapify_loop>
+    8018:	e8bd8004 	pop	{r2, pc}
+
+0000801c <sift_down>:
+    801c:	e92d41fc 	push	{r2, r3, r4, r5, r6, r7, r8, lr}
+    8020:	e2413001 	sub	r3, r1, #1
+    8024:	e1a030a3 	lsr	r3, r3, #1
+
+00008028 <recursive_sift_down>:
+    8028:	e1520003 	cmp	r2, r3
+    802c:	ca000016 	bgt	808c <end_of_sift>
+    8030:	e1a04082 	lsl	r4, r2, #1
+    8034:	e2844001 	add	r4, r4, #1
+    8038:	e2845001 	add	r5, r4, #1
+    803c:	e1550001 	cmp	r5, r1
+    8040:	e7906102 	ldr	r6, [r0, r2, lsl #2]
+    8044:	e7907104 	ldr	r7, [r0, r4, lsl #2]
+    8048:	d7908105 	ldrle	r8, [r0, r5, lsl #2]
+    804c:	ca000002 	bgt	805c <left_gt_right>
+    8050:	e1570008 	cmp	r7, r8
+    8054:	aa000000 	bge	805c <left_gt_right>
+    8058:	ba000005 	blt	8074 <right_gt_left>
+
+0000805c <left_gt_right>:
+    805c:	e1560007 	cmp	r6, r7
+    8060:	aa000009 	bge	808c <end_of_sift>
+    8064:	e7807102 	str	r7, [r0, r2, lsl #2]
+    8068:	e7806104 	str	r6, [r0, r4, lsl #2]
+    806c:	e1a02004 	mov	r2, r4
+    8070:	eaffffec 	b	8028 <recursive_sift_down>
+
+00008074 <right_gt_left>:
+    8074:	e1560008 	cmp	r6, r8
+    8078:	aa000003 	bge	808c <end_of_sift>
+    807c:	e7808102 	str	r8, [r0, r2, lsl #2]
+    8080:	e7806105 	str	r6, [r0, r5, lsl #2]
+    8084:	e1a02005 	mov	r2, r5
+    8088:	eaffffe6 	b	8028 <recursive_sift_down>
+
+0000808c <end_of_sift>:
+    808c:	e8bd81fc 	pop	{r2, r3, r4, r5, r6, r7, r8, pc}
