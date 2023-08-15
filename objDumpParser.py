@@ -40,27 +40,8 @@ def parse_objdump(file_name):
             address, value, instruction, content = match.groups()
             identifier_value = format(int(value[1], 16), '04b')
             whole_instruction = format(int(value, 16), '032b')
-            group = typeChooser(whole_instruction)
             group = nameChooser(instruction)
             memory_index = int(((int(address, 16) - starting_address))/4)
-            '''
-            if group == "BRANCH" and instruction[:1] != "b":
-                group = "UNDEFINED"
-            if instruction == "msr":
-                group = "COPROCESSOR"
-            if instruction == "mrs":
-                group = "COPROCESSOR"
-            if group == "UNDEFINED" and (instruction[:3] in alu_mnemonic_list):
-                group = "ALU"
-            if group == "UNDEFINED" and (instruction[:4] in stack_mnemonic_list):
-                group = "STACK"
-            if group == "UNDEFINED" and (instruction[:3] in shift_list):
-                group = "ALU"
-            if group == "UNDEFINED" and (instruction[:3] in coprocessor_list):
-                group = "COPROCESSOR"
-            if group == "UNDEFINED" and (instruction[:2] == "ld" or instruction[:2] == "st"):
-                group = "LOAD STORE"
-            '''
             instructions.append({
                 'index': index,                         # General dict index
                 'memory_index': memory_index,           # Memory index, relative to the processor's memory

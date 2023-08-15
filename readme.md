@@ -1,6 +1,9 @@
 # ElfViewer
 Prova prática da disciplina PCS3732. Esse aplicativo permite a visualização da estrutura de memória de um arquivo .elf qualquer.
 
+Uma demonstração do projeto pode ser vista no video abaixo:
+https://youtu.be/TW_w94GM_XA
+
 # Como buildar
 Primeiro, clone o repositório para a sua máquina
 ```
