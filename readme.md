@@ -52,6 +52,7 @@ Isto feito, fornecer o caminho para o arquivo desejado. No caso, dentro da pasta
 - GreyGrievance | Tema Grayscale
 - MonokaiMadness | Tema estilo *Monokai* 
 - NordicNausea | Tema estilo *Nord*
+- RuthlessRats | Tema da Atlética da Poli
 - SolarizedSummer | Tema estilo *Solarized Dark*
 - TerminalTragedy | Tema em tons de verde e laranja
 
