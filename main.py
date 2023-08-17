@@ -1,8 +1,4 @@
-### TODO:
-# - Implement branch direction highlighting for relative mode
-
 import pygame, sys
-#from typeChooser import typeChooser
 from objDumpParser import parse_objdump
 from colorDialogueRenderer import display_color_dialogue
 from pygame.locals import *
@@ -53,8 +49,6 @@ except ImportError:
 #######################################################################################
 
 group_types = list(theme_module.theme)
-print(group_types)
-print(len(group_types))
 group_types = group_types[:13]
 group_types.append("Total")
 group_ammounts = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -108,7 +102,6 @@ for instruction in tqdm(instructions, desc="Rendering and creating table",unit="
 AUXSURF = DISPLAYSURF.copy()
 print("\n")
 group_ammounts[-1] = count
-print("Group ammounts:", group_ammounts)
 group_percentages = []
 for i in group_ammounts[:13]:
     group_percentages.append(str("{:.4f}".format((i/group_ammounts[-1])*100)) + "%")
